@@ -1,85 +1,117 @@
-# BLOCK-C: Blockchain Car Document Verification System
+# BLOCK-C: Blockchain Vehicle Registration and Verification System
 
-Full-stack FYP implementation with:
+Full-stack FYP project for secure vehicle registration, document hashing, and vehicle authenticity verification.
+
+## Stack
+
 - Frontend: React + Vite
-- Backend: Node.js + Express + SQLite
-- Blockchain: Solidity smart contract + Hardhat
+- Backend: Node.js + Express
+- Database: MongoDB, database name `blockchain`
+- Blockchain: Solidity + Hardhat, with automatic mock transaction fallback when a local chain is not running
 
-## Modules Implemented
+## Main Features
 
-1. User Management Module
-- Secure signup/login (`bcrypt` + `JWT`)
-- Role-based access (`ADMIN`, `OWNER`, `BUYER`, `TRAFFIC_POLICE`)
-- Session storage and logout
-- Password recovery token flow
+- Admin sign in with JWT sessions and bcrypt password hashing
+- Forgot Password flow for Admin password update in MongoDB
+- Role-based protected APIs for Admin, Owner, Buyer, and Traffic Police
+- Seeded vehicle registration dataset in `server/data/vehicle_dataset.json`
+- MongoDB vehicle records with owner, company, model, type, registration, engine, chassis, document number, dates, status, and immutable record hash
+- Manual, QR, and uploaded document verification by registration/engine/chassis/document number
+- Success/fake alert messages for valid and invalid vehicle checks
+- Verification records saved in MongoDB with blockchain/mock transaction ID and hash chain
+- Document upload with SHA-256 hash storage and blockchain transaction record
+- Dashboard overview, vehicle table, verification history, blockchain history, and audit trail
+- Test case document in `TEST_CASES.md`
 
-2. Vehicle Registration Module
-- Vehicle registration with unique identifiers
-- Vehicle metadata storage
-- Document upload with validation
-- Unique vehicle UID assignment
-
-3. Document Hashing & Blockchain Storage Module
-- SHA-256 hash generation for uploaded files
-- Hash uniqueness check
-- Hash write to blockchain smart contract (or mock mode)
-- TX ID and timestamp recording + retrieval
-
-4. Smart Contract & Audit Trail Module
-- Solidity contract for vehicle/doc/ownership records
-- On-chain ownership transfer transaction support
-- Immutable audit chain (`previous_hash -> current_hash`)
-- Audit log listing endpoint
-
-## Project Structure
-
-- `client/` React frontend with login UI, dashboard, module pages, camera QR scanner
-- `server/` Express APIs, auth, RBAC, uploads, SQLite, hashing, audit
-- `contracts/` Solidity contract and Hardhat scripts
-
-## Run Instructions
-
-Open 3 terminals.
-
-1) Start blockchain node
-```bash
-cd contracts
-npm install
-npm run node
-```
-
-2) Deploy smart contract (new terminal)
-```bash
-cd contracts
-npm run compile
-npm run deploy:local
-```
-
-3) Start backend (new terminal)
-```bash
-cd server
-npm install
-copy .env.example .env
-npm run dev
-```
-
-4) Start frontend (new terminal)
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Frontend URL: `http://localhost:5173`
-Backend URL: `http://localhost:5000`
-
-## Default Seed Admin
+## Default Admin
 
 - Email: `admin@blockcar.local`
 - Password: `Admin@123`
 
-## Notes
+## Run Instructions
 
-- If contract is not deployed, backend automatically falls back to `MOCK` blockchain mode.
-- Logo used: `c1.png` copied to `client/public/c1.png`.
-- Camera scanner is available in dashboard under `Camera Scanner`.
+Install dependencies in each folder if needed:
+
+```bash
+cd server
+npm install
+cd ../client
+npm install
+cd ../contracts
+npm install
+```
+
+Configure `server/.env`:
+
+```env
+PORT=5001
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=change_this_to_a_secure_secret
+JWT_EXPIRY=8h
+MONGO_URI=mongodb://127.0.0.1:27017
+MONGO_DB_NAME=blockchain
+UPLOAD_DIR=./uploads
+BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
+BLOCKCHAIN_CHAIN_ID=31337
+BLOCKCHAIN_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+BLOCKCHAIN_CONTRACT_ADDRESS=
+```
+
+Seed vehicle dataset:
+
+```bash
+cd server
+npm run seed:vehicles
+```
+
+Start backend:
+
+```bash
+cd server
+npm run dev
+```
+
+Start frontend:
+
+```bash
+cd client
+npm run dev
+```
+
+Open:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5001/api/health`
+
+Optional live blockchain:
+
+```bash
+cd contracts
+npm run node
+npm run compile
+npm run deploy:local
+```
+
+If the chain is not running, backend operations continue in mock mode and still save transaction-style IDs.
+
+## Important API Areas
+
+- `POST /api/auth/login`
+- `POST /api/auth/admin/forgot-password`
+- `GET /api/dashboard`
+- `GET /api/vehicles`
+- `POST /api/vehicles`
+- `POST /api/verification/search`
+- `POST /api/verification/document`
+- `GET /api/verification/records`
+- `GET /api/blockchain/history`
+- `GET /api/audit`
+
+## Project Files Added
+
+- `server/data/vehicle_dataset.json`
+- `server/scripts/seedVehicles.js`
+- `server/src/models/VerificationRecord.js`
+- `server/src/routes/verificationRoutes.js`
+- `server/src/routes/dashboardRoutes.js`
+- `TEST_CASES.md`

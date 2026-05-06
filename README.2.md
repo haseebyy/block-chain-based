@@ -116,7 +116,7 @@ CLIENT_URL=http://localhost:5173
 JWT_SECRET=change_this_to_a_secure_secret
 JWT_EXPIRY=8h
 MONGO_URI=mongodb://127.0.0.1:27017
-MONGO_DB_NAME=blockchain_car_verification
+MONGO_DB_NAME=blockchain
 UPLOAD_DIR=./uploads
 BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
 BLOCKCHAIN_CHAIN_ID=31337
@@ -177,7 +177,7 @@ Default seeded login:
 ## 7. MongoDB Database and Collections
 
 Database name:
-- `blockchain_car_verification`
+- `blockchain`
 
 Collections used:
 - `users`
@@ -186,6 +186,7 @@ Collections used:
 - `documents`
 - `ownership_transfers`
 - `audit_trail`
+- `verification_records`
 
 ---
 
@@ -202,7 +203,7 @@ From your system:
 3. Export data as JSON (or CSV)
 
 On friend system:
-1. Create same DB `blockchain_car_verification`
+1. Create same DB `blockchain`
 2. Create same collections
 3. Import JSON files into corresponding collections
 
@@ -211,7 +212,7 @@ On friend system:
 On your machine:
 
 ```powershell
-mongodump --db blockchain_car_verification --out .\mongo-backup
+mongodump --db blockchain --out .\mongo-backup
 ```
 
 Share `mongo-backup` folder with friend.
@@ -252,4 +253,3 @@ Do not push:
 - Real `.env` with secrets
 - `node_modules`
 - local DB dumps unless intentionally sharing
-
